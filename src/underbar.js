@@ -264,11 +264,31 @@
   //     bla: "even more stuff"
   //   }); // obj1 now contains key1, key2, key3 and bla
   _.extend = function(obj) {
+    var newObj = {};
+
+    for (var i = 0; i < arguments.length; i++) {
+      for (var key in arguments[i]) {
+        if (arguments[i].hasOwnProperty(key)) {
+          newObj[key] = arguments[i][key];
+        }
+      }
+    }
+    return newObj;
   };
 
   // Like extend, but doesn't ever overwrite a key that already
   // exists in obj
   _.defaults = function(obj) {
+    var newObj = {};
+
+    for (var i = 0; i < arguments.length; i++) {
+      for (var key in arguments[i]) {
+        if (arguments[i].hasOwnProperty(key)) {
+          newObj[key] = arguments[i][key];
+        }
+      }
+    }
+    return newObj;
   };
 
 
@@ -312,6 +332,25 @@
   // already computed the result for the given argument and return that value
   // instead if possible.
   _.memoize = function(func) {
+    var alreadyCalled = false;
+    var argPassed = [];
+    var result;
+
+    return function() {
+      if (!alreadyCalled) {
+        result = func.apply(this, arguments);
+        argPassed.push(arguments);
+      }
+
+      for (var i = 0; i < argPassed.length; i++) {
+        if (arguments !== argPassed[i]) {
+          result = func.apply(this, arguments);
+          argPassed.push(arguments);
+        }
+        alreadyCalled = true;
+      }
+      return result;
+    }
   };
 
   // Delays a function for the given number of milliseconds, and then calls
@@ -321,6 +360,8 @@
   // parameter. For example _.delay(someFunction, 500, 'a', 'b') will
   // call someFunction('a', 'b') after 500ms
   _.delay = function(func, wait) {
+    setTimeout(func, wait);
+
   };
 
 
@@ -335,6 +376,21 @@
   // input array. For a tip on how to make a copy of an array, see:
   // http://mdn.io/Array.prototype.slice
   _.shuffle = function(array) {
+    var newArr= [];
+    var copiedArr = array.slice();
+
+    function getRandom(arr) {
+      return Math.floor(Math.random() * arr.length);
+    }
+
+    for (var i = 0; i < array.length; i++) {
+      var randomIndex = getRandom(copiedArr);
+      console.log(randomIndex);
+      newArr.push(copiedArr.splice(randomIndex, 1)[0]);
+      console.log(newArr);
+    }
+
+    return newArr;
   };
 
 
