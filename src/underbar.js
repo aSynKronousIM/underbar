@@ -283,7 +283,7 @@
 
     for (var i = 0; i < arguments.length; i++) {
       for (var key in arguments[i]) {
-        if (arguments[i].hasOwnProperty(key)) {
+        if (arguments[i].hasOwnProperty(key) && newObj[key] === undefined) {
           newObj[key] = arguments[i][key];
         }
       }
@@ -332,23 +332,28 @@
   // already computed the result for the given argument and return that value
   // instead if possible.
   _.memoize = function(func) {
-    var alreadyCalled = false;
-    var argPassed = [];
     var result;
+    var usedArgs = [];
+    var storedResults = [];
+    var alreadyCalled = false;
 
     return function() {
+
       if (!alreadyCalled) {
         result = func.apply(this, arguments);
-        argPassed.push(arguments);
-      }
-
-      for (var i = 0; i < argPassed.length; i++) {
-        if (arguments !== argPassed[i]) {
-          result = func.apply(this, arguments);
-          argPassed.push(arguments);
-        }
         alreadyCalled = true;
       }
+
+      for (var i = 0; i < usedArgs.length; i++) {
+        if (arguments === usedArgs[i]) {
+          return storedResults[i];
+        } else {
+          result = func.apply(this, arguments);
+        }
+      }
+      usedArgs.push(arguments);
+      storedResults.push(result);
+
       return result;
     }
   };
@@ -360,8 +365,14 @@
   // parameter. For example _.delay(someFunction, 500, 'a', 'b') will
   // call someFunction('a', 'b') after 500ms
   _.delay = function(func, wait) {
-    setTimeout(func, wait);
+    var result;
 
+    setTimeout(func, wait, arguments[2], arguments[3]);
+
+    return function() {
+      result = func.apply(this, arguments);
+      return result;
+    }
   };
 
 
