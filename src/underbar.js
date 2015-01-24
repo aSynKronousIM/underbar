@@ -264,31 +264,31 @@
   //     bla: "even more stuff"
   //   }); // obj1 now contains key1, key2, key3 and bla
   _.extend = function(obj) {
-    var newObj = {};
+    var object = arguments[0];
 
     for (var i = 0; i < arguments.length; i++) {
       for (var key in arguments[i]) {
         if (arguments[i].hasOwnProperty(key)) {
-          newObj[key] = arguments[i][key];
+          object[key] = arguments[i][key];
         }
       }
     }
-    return newObj;
+    return object;
   };
 
   // Like extend, but doesn't ever overwrite a key that already
   // exists in obj
   _.defaults = function(obj) {
-    var newObj = {};
+    var object = arguments[0];
 
     for (var i = 0; i < arguments.length; i++) {
       for (var key in arguments[i]) {
-        if (arguments[i].hasOwnProperty(key) && newObj[key] === undefined) {
-          newObj[key] = arguments[i][key];
+        if (arguments[i].hasOwnProperty(key) && object[key] === undefined) {
+          object[key] = arguments[i][key];
         }
       }
     }
-    return newObj;
+    return object;
   };
 
 
@@ -335,26 +335,21 @@
     var result;
     var usedArgs = [];
     var storedResults = [];
-    var alreadyCalled = false;
 
     return function() {
-
-      if (!alreadyCalled) {
-        result = func.apply(this, arguments);
-        alreadyCalled = true;
-      }
 
       for (var i = 0; i < usedArgs.length; i++) {
         if (arguments === usedArgs[i]) {
           return storedResults[i];
-        } else {
-          result = func.apply(this, arguments);
         }
       }
+
+      result = func.apply(this, arguments);
       usedArgs.push(arguments);
       storedResults.push(result);
 
       return result;
+
     }
   };
 
